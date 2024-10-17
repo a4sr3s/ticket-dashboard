@@ -30,3 +30,16 @@ Ticket Dashboard is a web application that integrates with **OpenSearch on Digit
 
 ## Environment Variables
 Create a `.env.local` file in the root directory with the following content:
+
+```plaintext
+# OpenSearch Configuration
+OPENSEARCH_NODE=https://your-opensearch-node-url:25060
+OPENSEARCH_USERNAME=doadmin
+OPENSEARCH_PASSWORD=your_opensearch_password
+
+# GenAI API Configuration
+API_BASE=https://cloud.digitalocean.com/gen-ai
+AGENT_ID=your_genai_agent_id
+AGENT_KEY=your_genai_agent_key
+AGENT_ENDPOINT=https://your-genai-endpoint/api/v1/
+```
