@@ -8,6 +8,10 @@
     "start": "next start",
     "lint": "next lint"
   },
+  "engines": {
+  "node": "20.x",
+  "npm": "10.x"
+  },
   "dependencies": {
     "@elastic/elasticsearch": "^8.15.1",
     "@opensearch-project/opensearch": "^2.12.0",
@@ -26,7 +30,7 @@
     "react-dom": "^18",
     "tailwind-merge": "^2.5.4",
     "tailwindcss-animate": "^1.0.7"
-  },
+   },
   "devDependencies": {
     "@shadcn/ui": "^0.0.4",
     "@types/node": "^20",
