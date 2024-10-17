@@ -45,7 +45,6 @@ Thumbs.db
 .env.*.local
 
 # Lockfiles (optional, if you prefer regenerating them)
-/package-lock.json
 /yarn.lock
 /pnpm-lock.yaml
 
