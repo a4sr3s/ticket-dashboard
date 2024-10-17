@@ -1,36 +1,32 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Ticket Dashboard
 
-## Getting Started
+## Overview
+Ticket Dashboard is a web application that integrates with **OpenSearch on DigitalOcean** to manage and retrieve ticket data. It also leverages **DigitalOcean's GenAI product** to enable AI-powered chat interactions, making the app interactive and efficient. 
 
-First, run the development server:
+## This app is just a demo and intended for educational purposes only.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+---
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Features
+- **OpenSearch Integration:**  
+  Retrieve and display ticket data (open, resolved, and total tickets) from your OpenSearch instance hosted on DigitalOcean.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **GenAI Chat Integration:**  
+  Use DigitalOcean’s GenAI product to engage in chat-based interactions within the application.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- **Examples File:**  
+  An example JSON file has been added to **`examples/tickets-10-24.json`** to replicate the data structure used in the app. This can be used for testing and development purposes.
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## Prerequisites
+1. **Node.js** (v14+)
+2. **Next.js** (14.2.15 or later)
+3. **DigitalOcean Account** with:
+   - OpenSearch service access
+   - GenAI product access
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Environment Variables
+Create a `.env.local` file in the root directory with the following content:
