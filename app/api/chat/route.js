@@ -1,67 +1,66 @@
 import { NextResponse } from 'next/server';
 import dotenv from 'dotenv';
-dotenv.config({ path: '.env.local' }); // Load environment variables
+dotenv.config({ path: '.env.local' });
 
-// Environment variables
 const API_BASE = process.env.API_BASE;
 const agent_id = process.env.AGENT_ID;
 const agent_key = process.env.AGENT_KEY;
 const agent_endpoint = process.env.AGENT_ENDPOINT;
 
-// Token management variables
-let accessToken = '';
-let tokenExpiresAt = 0;
-let isFetchingToken = false; // Prevent race conditions
+let tokenCache = {
+  accessToken: '',
+  expiresAt: 0,
+  fetching: null, // Store the fetch promise
+};
 
-// Helper: Fetch new access token
+// Helper: Fetch and store a new access token
 async function fetchAccessToken() {
   console.log('Fetching new access token...');
-  try {
-    const response = await fetch(`${API_BASE}/auth/agents/${agent_id}/token`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Api-Key': agent_key,
-      },
-      body: JSON.stringify({}),
-    });
+  const response = await fetch(`${API_BASE}/auth/agents/${agent_id}/token`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Api-Key': agent_key,
+    },
+    body: JSON.stringify({}),
+  });
 
-    if (!response.ok) {
-      throw new Error('Failed to get access token');
-    }
-
-    const data = await response.json();
-    accessToken = data.access_token;
-    tokenExpiresAt = Date.now() + data.expires_in * 1000 - 5000; // Subtract 5s buffer
-    console.log('Access token initialized and stored.');
-  } catch (error) {
-    console.error('Error fetching access token:', error);
-    throw error;
+  if (!response.ok) {
+    throw new Error('Failed to get access token');
   }
+
+  const data = await response.json();
+  tokenCache.accessToken = data.access_token;
+  tokenCache.expiresAt = Date.now() + data.expires_in * 1000 - 5000; // Buffer time
+  console.log('Access token initialized and stored.');
+  return tokenCache.accessToken;
 }
 
-// Ensure token is valid before use
+// Helper: Ensure a valid token is available
 async function ensureValidToken() {
-  if (!accessToken || Date.now() >= tokenExpiresAt) {
-    if (!isFetchingToken) {
-      isFetchingToken = true; // Lock to prevent concurrent fetches
-      try {
-        await fetchAccessToken();
-      } finally {
-        isFetchingToken = false; // Release lock
-      }
-    } else {
-      console.log('Waiting for token fetch to complete...');
-      await new Promise((resolve) => setTimeout(resolve, 100)); // Small wait
-      return ensureValidToken(); // Re-check after waiting
-    }
+  // Return token if it's still valid
+  if (tokenCache.accessToken && Date.now() < tokenCache.expiresAt) {
+    return tokenCache.accessToken;
   }
+
+  // If a token fetch is already in progress, wait for it to complete
+  if (tokenCache.fetching) {
+    console.log('Waiting for ongoing token fetch...');
+    return tokenCache.fetching;
+  }
+
+  // Start a new token fetch and store the promise
+  tokenCache.fetching = fetchAccessToken().finally(() => {
+    tokenCache.fetching = null; // Clear the fetching state after completion
+  });
+
+  return tokenCache.fetching;
 }
 
 // Main handler for POST requests
 export async function POST(request) {
   try {
-    await ensureValidToken(); // Ensure we have a valid token
+    const validToken = await ensureValidToken(); // Ensure a valid token
 
     const { messages } = await request.json();
 
@@ -69,7 +68,7 @@ export async function POST(request) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${accessToken}`, // Use the valid token
+        Authorization: `Bearer ${validToken}`, // Use the valid token
       },
       body: JSON.stringify({
         model: 'gpt-3.5-turbo',
